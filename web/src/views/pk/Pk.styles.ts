@@ -9,7 +9,6 @@ export const Root = styled.div`
 export const PlayGround = styled.div`
   width: 80vw;
   height: 70vh;
-  background-color: lightblue;
   margin: 0 auto;
   display: flex;
   justify-content: center;

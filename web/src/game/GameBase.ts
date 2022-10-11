@@ -14,9 +14,10 @@ class GameBase {
   ondestroy() {}
   destroy() {
     this.ondestroy()
+    console.log()
     for (let i = 0; i < GAME_RANDER_LIST.length; i++) {
       if (GAME_RANDER_LIST[i] === this) {
-        GAME_RANDER_LIST.splice(i)
+        GAME_RANDER_LIST.splice(i, 1)
         break
       }
     }
@@ -39,4 +40,9 @@ const rander = (timestamp: number) => {
 }
 
 requestAnimationFrame(rander)
+
+export const CLEAR_GAMERANDER_LIST = () => {
+  while (GAME_RANDER_LIST.length) GAME_RANDER_LIST.pop()
+}
+
 export default GameBase
