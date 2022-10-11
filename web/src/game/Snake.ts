@@ -38,6 +38,11 @@ class Snake extends GameBase {
   set_next_step(d: SnakeDirection): void {
     this.direction = d
   }
+  check_delete_tail(): boolean {
+    if (this.step < 10) return false
+    else if (this.step % 3) return true
+    return false
+  }
   next_step(): void {
     const d = this.direction
     this.direction = SnakeDirection.never
@@ -50,6 +55,7 @@ class Snake extends GameBase {
     for (let i = this.cells.length; i > 0; i--)
       this.cells[i] = JSON.parse(JSON.stringify(this.cells[i - 1]))
     this.step++
+    if (!this.map.check_valid(this.nextCell)) this.status = SnakeStatus.die
   }
   update_move(): void {
     if (!this.nextCell) return
@@ -60,6 +66,7 @@ class Snake extends GameBase {
       this.status = SnakeStatus.idle
       this.cells[0] = this.nextCell
       this.nextCell = null
+      if (this.check_delete_tail()) this.cells.pop()
     } else {
       const move_distance = (this.speed * this.time) / 1000 // 每两帧之间走的距离
       this.cells[0].x += (move_distance * dx) / distance
@@ -69,10 +76,22 @@ class Snake extends GameBase {
   render(): void {
     const { ctx, L } = this.map
     ctx.fillStyle = this.color
+    if (this.status === SnakeStatus.die) ctx.fillStyle = '#fff'
     for (const cell of this.cells) {
       ctx.beginPath()
       ctx.arc(cell.x * L, cell.y * L, (L / 2) * 0.8, 0, Math.PI * 2)
       ctx.fill()
+    }
+
+    for (let i = 1; i < this.cells.length; i++) {
+      const a = this.cells[i - 1],
+        b = this.cells[i]
+      if (Math.abs(a.x - b.x) < 0.01 && Math.abs(a.y - b.y) < 0.01) continue
+      if (Math.abs(a.x - b.x) < 0.01) {
+        ctx.fillRect((a.x - 0.4) * L, Math.min(a.y, b.y) * L, L * 0.8, Math.abs(a.y - b.y) * L)
+      } else {
+        ctx.fillRect(Math.min(a.x, b.x) * L, (a.y - 0.4) * L, Math.abs(a.x - b.x) * L, L * 0.8)
+      }
     }
   }
 }

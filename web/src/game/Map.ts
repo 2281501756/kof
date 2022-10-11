@@ -1,4 +1,5 @@
 import { SnakeDirection, SnakeStatus } from '../enum/SnakeStatus'
+import Cell from './Cell'
 import GameBase from './GameBase'
 import Snake from './Snake'
 import Wall from './Wall'
@@ -97,6 +98,26 @@ class Map extends GameBase {
     }
     return true
   }
+  check_valid(cell: Cell) {
+    // 检测目标位置是否合法：没有撞到两条蛇的身体和障碍物
+    for (const wall of this.walls) {
+      if (wall.row === cell.row && wall.col === cell.col) return false
+    }
+
+    for (const snake of this.snakes) {
+      let k = snake.cells.length
+      if (!snake.check_delete_tail()) {
+        // 当蛇尾会前进的时候，蛇尾不要判断
+        k--
+      }
+      for (let i = 0; i < k; i++) {
+        if (snake.cells[i].row === cell.row && snake.cells[i].col === cell.col) return false
+      }
+    }
+
+    return true
+  }
+
   next_step(): void {
     for (const snake of this.snakes) {
       snake.next_step()
