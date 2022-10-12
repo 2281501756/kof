@@ -1,4 +1,10 @@
-import { SnakeDirection, SnakeOffset, SnakeStatus } from '../enum/SnakeStatus'
+import {
+  SnakeDirection,
+  SnakeEyeDirection,
+  SnakeEyeOffset,
+  SnakeOffset,
+  SnakeStatus,
+} from '../enum/SnakeStatus'
 import Cell from './Cell'
 import GameBase from './GameBase'
 import Map from './Map'
@@ -10,6 +16,7 @@ class Snake extends GameBase {
   public nextCell: Cell | null
   public step: number
   public speed: number
+  public eye_direction: SnakeEyeDirection
   constructor(
     public id: number,
     public row: number,
@@ -24,6 +31,8 @@ class Snake extends GameBase {
     this.nextCell = null
     this.step = 0
     this.speed = 5
+    if (id === 1) this.eye_direction = SnakeEyeDirection.up
+    else this.eye_direction = SnakeEyeDirection.down
   }
   start(): void {
     this.init()
@@ -56,6 +65,25 @@ class Snake extends GameBase {
       this.cells[i] = JSON.parse(JSON.stringify(this.cells[i - 1]))
     this.step++
     if (!this.map.check_valid(this.nextCell)) this.status = SnakeStatus.die
+
+    switch (d) {
+      case SnakeDirection.up: {
+        this.eye_direction = SnakeEyeDirection.up
+        break
+      }
+      case SnakeDirection.right: {
+        this.eye_direction = SnakeEyeDirection.right
+        break
+      }
+      case SnakeDirection.down: {
+        this.eye_direction = SnakeEyeDirection.down
+        break
+      }
+      case SnakeDirection.left: {
+        this.eye_direction = SnakeEyeDirection.left
+        break
+      }
+    }
   }
   update_move(): void {
     if (!this.nextCell) return
@@ -93,6 +121,25 @@ class Snake extends GameBase {
         ctx.fillRect(Math.min(a.x, b.x) * L, (a.y - 0.4) * L, Math.abs(a.x - b.x) * L, L * 0.8)
       }
     }
+    const h = this.cells[0]
+    ctx.fillStyle = '#000'
+    ctx.beginPath()
+
+    ctx.arc(
+      (h.x + SnakeEyeOffset[this.eye_direction].x1 * 0.2) * L,
+      (h.y + SnakeEyeOffset[this.eye_direction].y1 * 0.2) * L,
+      L * 0.06,
+      0,
+      Math.PI * 2
+    )
+    ctx.arc(
+      (h.x + SnakeEyeOffset[this.eye_direction].x2 * 0.2) * L,
+      (h.y + SnakeEyeOffset[this.eye_direction].y2 * 0.2) * L,
+      L * 0.06,
+      0,
+      Math.PI * 2
+    )
+    ctx.fill()
   }
 }
 
