@@ -1,15 +1,17 @@
 import NavBar from './views/navbar/NavBar'
 import RouterConfig from './router'
-import Home from './views/home/Home'
-
+import styled from 'styled-components'
+const AppStyle = styled.div`
+  width: 100%;
+  height: calc(100% - 64px);
+  background: url('/bg.jpg') no-repeat center/cover;
+`
 const App = () => {
   return (
-    <div id="app">
+    <AppStyle id="app">
       <NavBar></NavBar>
-      <Home>
-        <RouterConfig></RouterConfig>
-      </Home>
-    </div>
+      <RouterConfig></RouterConfig>
+    </AppStyle>
   )
 }
 

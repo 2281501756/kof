@@ -1,5 +1,5 @@
 import { Root, PlayGround } from './Pk.styles'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Map from '../../game/Map'
 import { CLEAR_GAMERANDER_LIST } from '../../game/GameBase'
 import axiox from 'axios'
@@ -15,30 +15,32 @@ const Pk = () => {
     return () => {
       CLEAR_GAMERANDER_LIST()
     }
-  })
-
+  }, [])
+  const login = useCallback(async () => {
+    let data = await axiox.post('/api/user/account/token/', {
+      username: 'donghao',
+      password: '123456',
+    })
+    setToken(data.data.token)
+  }, [])
   useEffect(() => {
-    axiox({
-      url: '/api/user/account/token/',
-      method: 'post',
-      data: {
-        username: 'donghao',
-        password: '123456',
-      },
-    }).then((res) => {
-      console.log(res.data)
-      setToken(res.data.token)
-    })
-    axiox({
-      url: '/api/user/info/',
-      method: 'get',
-      headers: {
-        Authorization: 'Bearer ' + token,
-      },
-    }).then((res) => {
-      console.log(res)
-    })
-  })
+    login()
+  }, [login])
+  useEffect(() => {
+    if (!token) return
+    const info = () => {
+      axiox
+        .get('/api/user/account/info/', {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        })
+        .then((res) => {
+          console.log(res.data)
+        })
+    }
+    info()
+  }, [token])
 
   return (
     <Root>

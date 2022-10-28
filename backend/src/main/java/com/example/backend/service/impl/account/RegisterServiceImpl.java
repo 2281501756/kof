@@ -20,7 +20,7 @@ public class RegisterServiceImpl implements RegisterService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public Map<String, String> register(String username, String password, String confirmPassword) {
+    public Map<String, String> register(String username, String password, String confirmPassword, String nickname) {
         Map<String, String> map = new HashMap<>();
         username = username.trim();
         if(username.length() == 0) {
@@ -44,7 +44,7 @@ public class RegisterServiceImpl implements RegisterService {
         }
         String encodedPassword = passwordEncoder.encode(password);
         String photo = "https://cdn.acwing.com/media/user/profile/photo/67937_lg_b3096b1d39.png";
-        User user = new User(null, username, encodedPassword, photo);
+        User user = new User(null, username, encodedPassword, nickname, photo);
         userMapper.insert(user);
         map.put("error_message", "success");
         return map;
